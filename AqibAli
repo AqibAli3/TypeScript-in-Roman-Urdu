@@ -16,7 +16,7 @@ Typescript Kaise Likha Jaye:
    ```typescript
    // Example: Typescript mein variable declaration
    let naam: string = "Ahmed";
-   ``
+   ``'
 
 4. Compile Karna:
    Typescript code ko JavaScript mein compile karne ke liye terminal mein `tsc filename.ts` command use karein. Isse aapko ek `.js` file milega.
