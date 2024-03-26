@@ -740,3 +740,82 @@ Exempli gratia, facere potes functionem alios valores reddere dependens utrum st
 function wrapInArray(obj: string | string[]) {
   if (typeof obj === "string") {
     return [obj];
+
+(parameter) obj: string
+  }
+  return obj;
+}
+Try
+Genericus
+Genericus provident variables ad typi. Exemplum communis est series. Series sine genericis posset continere quidquid. Series cum genericis potest describere valores quos series continet.
+
+typus StringArray = Array<string>;
+typus NumberArray = Array<number>;
+typus ObjectWithNameArray = Array<{ name: string }>;
+Potes tuas proprias species declarare quae genericis utuntur:
+
+interface Saccus<Typus> {
+  add: (obj: Typus) => void;
+  get: () => Typus;
+}
+ 
+// Haec linea est brevis iter ad TypeScript dicendum esse
+// constantem appellari "saccus", et non sollicitari ubi venerit.
+declare const saccus: Saccus<string>;
+ 
+// objectum est stringum, quia supra id declaramus ut pars variabilis Sacci.
+const objectum = saccus.get();
+ 
+// Cum saccus variabilis sit stringus, non potes numerum ad add functionem mittere.
+saccus.add(23);
+Argumentum typi 'number' non assignabile ad parametrum typi 'string'.
+Try
+Systema Typi Structuralis
+Unum ex principiis nucleus TypeScript est quod verificatio typi in formam valorum incumbit. Hoc aliquando "duck typing" aut "structural typing" vocatur.
+
+In systemate typi structurali, si duo objecta eandem formam habent, eadem specie censentur.
+
+interface Punctum {
+  x: number;
+  y: number;
+}
+ 
+function logPunctum(p: Punctum) {
+  console.log(`${p.x}, ${p.y}`);
+}
+ 
+// registra "12, 26"
+const punctum = { x: 12, y: 26 };
+logPunctum(punctum);
+Try
+Variabilis punctum nunquam declaratur ut typus Punctum. Tamen TypeScript formam puncti cum forma Puncti in verificatio typi comparat. Easdem formas habent, ideo codex superat.
+
+Comparatio formae requirit tantum subset objecti camporum ad congruendum.
+
+const punctum3 = { x: 12, y: 26, z: 89 };
+logPunctum(punctum3); // registra "12, 26"
+ 
+const rectangulum = { x: 33, y: 3, width: 30, height: 80 };
+logPunctum(rectangulum); // registra "33, 3"
+ 
+const color = { hex: "#187ABF" };
+logPunctum(color);
+Argumentum typi '{ hex: string; }' non assignabile ad parametrum typi 'Punctum'.
+  Typus '{ hex: string; }' caret sequentibus proprietatibus e typo 'Punctum': x, y
+Try
+Nulla differentia est inter quam classes et objecta ad formam congruant:
+
+class PunctumVirtualis {
+  x: number;
+  y: number;
+ 
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+ 
+const novumPunctumVirtualis = new PunctumVirtualis(13, 56);
+logPunctum(novumPunctumVirtualis); // registra "13, 56"
+Try
+Si objectum aut classis omnes proprietates requiratas habet, TypeScript dicet eas congruere, indifferenter implementationis detalis.
