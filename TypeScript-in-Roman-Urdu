@@ -257,3 +257,486 @@ TypeScript kay declaration files kay baray mein complete details yeh hain:
 - Declaration files ko aik say zyada tareeqon se banaya ja sakta hai. Aap khud say aik declaration file likh saktay hain, ya TypeScript compiler ko `--declaration` option kay sath chala kar aik declaration file generate karwa saktay hain. Aap TypeScript Language Service ko bhi istemal kar saktay hain, jo aap kay code ko analyze kar kay aik declaration file suggest karta hai¹.
 - Declaration files ko aik say zyada tareeqon se istemal kiya ja sakta hai. Aap aik declaration file ko aik TypeScript file mein reference tag kay sath include kar saktay hain. Masalan, `/// <reference path=\"jquery.d.ts\" />` aik reference tag hai, jo jquery.d.ts file ko include karta hai¹. Aap aik declaration file ko aik module kay sath import kar saktay hain. Masalan, `import * as $ from \"jquery\";` aik import statement hai, jo jquery module ko import karta hai, aur us ki declaration file ko bhi load karta hai¹. Aap aik declaration file ko aik TypeScript project mein tsconfig.json file kay sath include kar saktay hain. Masalan, `"include": ["./src/**/*", "jquery.d.ts"]` aik include option hai, jo src folder kay tamam files aur jquery.d.ts file ko include karta hai¹.
 - Declaration files ko mukhtalif tareeqon se likha ja sakta hai, jo library ya module ki structure kay mutabiq hotay hain. Aap aik global library kay liye aik global declaration file likh saktay hain, jo global variables, functions, ya objects ko declare karta hai. Masalan, `declare var $: JQueryStatic;` aik global declaration hai, jo $ variable ko declare karta hai¹. Aap aik modular library kay liye aik modular declaration file likh saktay hain, jo export statements istemal karta hai. Masalan, `export function ajax(settings: JQueryAjaxSettings): JQueryXHR;` aik modular declaration hai, jo ajax function ko export karta hai¹. Aap aik UMD library kay liye aik UMD declaration file likh saktay hain, jo global aur modular dono tareeqon se istemal ho sakta hai. Masalan, `export as namespace _;` aik UMD declaration hai, jo _ namespace ko export karta hai¹.
+
+
+
+**TYPESCRIPT ADVANCED COURSE **
+
+Mubarak ho TypeScript ko apni pehli zaban mein shamil karne par — aap ne pehle hi acha faisla kiya hai!
+
+Aapne shayad suna hoga ke TypeScript JavaScript ka "flavor" ya "variant" hai. TypeScript (TS) aur JavaScript (JS) ke talluqat mojooda programming zabanon mein kuch khas hai, is liye in talluqat ko samajhna aapko samajhne mein madad karega ke TypeScript JavaScript ko kaise behtar banata hai.
+
+JavaScript Kya Hai? Aik Mukhtasar Tareekh
+
+JavaScript (ya ECMAScript) ne apni zindagi ko ek aasan scripting zaban ke tor par shuru kiya tha browsers ke liye. Jab yeh banaya gaya, iska istemal web pages mein mojooda chand lines ke code ke liye kiya jana tha — zyada se zyada chand lines ke code likhna kuch khaas nahi tha. Is wajah se, pehle web browsers aise code ko kaafi dheere se execute karte the. Waqt ke saath, JS aur bhi popular hota gaya, aur web developers ne ise interactive experiences banane ke liye istemal karna shuru kiya.
+
+Web browser developers ne is zyada JS istemal par jawab diya, apni execution engines ko optimize kar ke (dynamic compilation) aur is ke saath kya kya kiya ja sakta hai ko barhaya (APIs shamil ki), jis se web developers ne ise aur bhi zyada istemal karna shuru kiya. Mojudah websites par, aapka browser aksar laakho lines code tak ka application chala raha hota hai. Yeh "the web" ka lamba aur dheere dheere istiqamati izafa hai, ek aasan static pages ka network se shuru hokar, aur her qisam ke ameer applications ke liye ek platform ban gaya hai.
+
+Is se zyada, JS itna mashhoor ho gaya hai ke ise browsers ke context ke bahar bhi istemal kiya jata hai, jaise ke node.js istemal kar ke JS servers ko implement karna. JS ka "kahi bhi chalao" fitrat ise cross-platform development ke liye ek kashish wala intikhab banata hai. Aaj kal bohot se developers hain jo apni poori stack ko sirf JavaScript istemal kar ke program karte hain!
+
+Toh mushtarak tor par, hamare paas aik zaban hai jo chand lamhon ke istemal ke liye tasaruf ki gayi thi, aur phir laakhon lines ke applications likhne ke liye aik mukammal tool ban gayi. Har zaban ke apne khas usool hote hain — ajeeb o ghareeb baaton, aur JavaScript ke mukhlis shuruwat se is ke bohot se hote hain. Kuch misaalain:
+
+JavaScript ka equality operator (==) apne operands ko coerce karta hai, jo anjaan rawayya ko paida karta hai:
+
+if ("" == 0) {
+
+// Yeh sahi hai! Magar kyun??
+
+}
+
+if (1 < x < 3) {
+
+// Har x ke *kisi bhi* value ke liye sahi!
+
+}
+
+JavaScript bhi maujooda nahi hone wale properties ko access karne ki ijaazat deta hai.
+const obj = { width: 10, height: 15 };
+
+// Yeh kyun NaN hai? Spell karna mushkil hai!
+
+const area = obj.width * obj.heigth;
+
+Zyadatar programming zabanen jab aisi ghaltiyan hoti hain, toh error throw karti hain, kuch toh compile waqt — kisi bhi code ke chalne se pehle. Chhotay programs likhte waqt, aisi ajeeb o ghareeb baatein pareshani ka bais banti hain magar control mein hoti hain; jab sadion ya hazaron lines ke code likhte hain, toh yeh musalsal hairat angez ghalatiyan aik serious masla ban jati hain.
+
+TypeScript: A Static Type Checker
+
+Humne pehle kaha tha ke kuch zabanen aise buggy programs ko bilkul bhi chalne nahi deti. Code mein ghaltiyon ko bina chalaye pehchanne ko static checking kehte hain. Un ghalatiyon ko pehchanne ka tareeqa, jo ke values ke qisam par mabni ho, ko static type checking kehte hain.
+
+TypeScript program ko execution se pehle errors ke liye check karta hai, aur yeh values ke qisam par mabni hota hai, jis se yeh aik static type checker banta hai. Masalan, pehli example mein error obj ke type ki wajah se hai. Yahan TypeScript ne yeh error paya:
+
+const obj = { width: 10, height: 15 };
+
+const area = obj.width * obj.heigth;
+
+Property 'heigth' does not exist on type '{ width: number; height: number; }'. Did you mean 'height'?Property 'heigth' does not exist on type '{ width: number; height: number; }'. Did you mean 'height'?Try
+
+A Typed Superset of JavaScript
+
+Lekin TypeScript JavaScript ka aik typed superset hai, matlab ke yeh farq dar tarah ke values ke istemal ke qawaid shamil karta hai. Pehli example mein obj.heigth ke baare mein error ek syntax error nahi tha: yeh kisi qisam ke value (a type) ko ghalat tareeqe se istemal karne ka error tha.
+
+Ek aur misaal, yeh JavaScript code hai jo aap apne browser mein chala sakte hain, aur yeh aik value ko log karega:
+
+console.log(4 / []);
+
+Yeh syntax ke mutabiq sahi program Infinity log karta hai. Lekin, TypeScript division of number by an array ko be-bunyad operation samajhta hai, aur yeh error deta hai:
+
+console.log(4 / []);
+
+The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.Try
+
+Ho sakta hai ke aap sach mein aik number ko ek array se divide karna chahte the, shayad sirf dekhne ke liye, lekin zyadatar waqt, yeh programming ki ghalti hoti hai. TypeScript ke type checker ko sahi programs ko jaane deta hai jab ke zyada common errors ko pakarta hai. (Baad mein, hum sikhenge ke aap kis tarah se TypeScript ke code ko kitni sakhti se check karne ke liye settings istemal kar sakte hain.)
+Agar aap kuch code ko JavaScript file se TypeScript file mein move karte hain, toh code kaise likha gaya hai us par depend karte hue aapko type errors dekhne ko mil sakte hain. Ye code ke sahi masail ho sakte hain, ya phir TypeScript zyada ihtiyaat se kaam kar raha ho. Is rehnumai ke doran ham dikhayenge ke in errors ko khatam karne ke liye kis tarah se various TypeScript syntax ko add karna hai.
+
+Runtime Behaviour
+
+TypeScript bhi aik programming language hai jo JavaScript ka runtime behavior barqarar rakhta hai. Misal ke tor par, JavaScript mein zero se taksim karne par Infinity ka nateeja nikalta hai runtime exception phenkne ke bajaye. Aik asool ke tor par, TypeScript kabhi bhi JavaScript code ka runtime behavior tabdeel nahi karta.
+
+Iska matlab hai ke agar aap code ko JavaScript se TypeScript mein move karte hain, toh woh code waise hi chalega, waise hi run hoga, waise hi output dega, waise hi behave karega, bina kisi farq ke, chunancha TypeScript ke nazdeek agar woh code type errors dikhata hai.
+
+JavaScript ke sath wahi runtime behavior barqarar rakhna TypeScript ka aik bunyadi wada hai, kyun ke yeh yehi darust kaam karta hai ke aap asani se dono zabanon mein transition kar sakte hain, bina kisi nuqsan ke.
+
+Erased Types
+
+Aik tor par, jab TypeScript ka compiler aapke code ko check karne ke saath khatam hota hai, toh woh types ko mita deta hai aur "compiled" code ko paida karta hai. Iska matlab hai ke jab aapka code compile ho jata hai, toh hasil hone wala plain JS code type information ke baghair hota hai.
+
+Iska matlab hai ke TypeScript kabhi bhi apne inferred types ke basis par aapke program ke rawaiye ko tabdeel nahi karta. Sarasar, agar aapko compile ke doran type errors nazar aayein, toh type system khud apke program ke kaam karne par koi asar nahi dalta.
+
+Aakhir mein, TypeScript kisi bhi mazeed runtime libraries ko faraham nahi karta. Aapke programs JavaScript programs ke wahi standard library (ya external libraries) ka istemal karenge, isliye koi mazeed TypeScript-specific framework seekhne ki zarurat nahi hai.
+
+JavaScript aur TypeScript Seekhna
+
+Ham bar bar ye sawal dekhte hain "Kya main JavaScript ya TypeScript seekhon?"
+
+Jawab ye hai ke aap TypeScript ko bina JavaScript seekhe nahi sakte! TypeScript JavaScript ke syntax aur runtime behavior ko share karta hai, toh jo kuch bhi aap JavaScript ke bare mein seekhte hain, wohi aapko TypeScript seekhne mein madad karta hai.
+
+Bohot se resources hain programmers ke liye JavaScript seekhne ke liye; agar aap TypeScript likh rahe hain toh in resources ko nazrandaaz nahi karna chahiye. Misal ke tor par, StackOverflow par javascript ke tag se judi hue approximately 20 guna zyada questions hain typescript ke muqablay mein, lekin sari javascript questions bhi typescript ke liye lagu hoti hain.
+
+Agar aap apne aapko kuch "TypeScript mein list kaise sort karen" jaise cheezon ke liye search karte hain, toh yaad rakhein: TypeScript JavaScript ka runtime hai jisme compile-time type checker shamil hai. Aap list ko TypeScript mein waise hi sort karenge jaise aap JavaScript mein karte hain. Agar aap koi resource dhundhte hain jo seedha TypeScript ka istemal karta hai, toh woh bhi acha hai, lekin khud ko aisa na sochna ke aapko rozana runtime tasks ko kaise anjam dena hai ke liye TypeScript-specific jawab chahiye hain.
+
+TypeScript JavaScript ke sath aik ajeeb taluqat mein hai. TypeScript JavaScript ke tamam features ko faraham karta hai, aur in par ek mazeed layer jisay TypeScript ka type system kehte hain.
+
+Misal ke tor par, JavaScript string aur number jaise language primitives faraham karta hai, lekin yeh nahi check karta ke aapne unhein consistenly kaise assign kiya hai. TypeScript check karta hai.
+
+Iska matlab hai ke aapka mojudah kaam kar raha JavaScript code bhi TypeScript code hai. TypeScript ka mukhya faida yeh hai ke yeh aapke code mein unexpected behavior ko highlight kar sakta hai, bugs ke chances ko kam kar deta hai.
+
+Yeh tutorial TypeScript ka aik mukhtasar jayeza faraham karta hai, jisme uska type system par tawajju di gayi hai.
+
+Inference ke Zariye Types
+TypeScript JavaScript zaban ko janta hai aur bohot se cases mein types aapke liye generate kar dega. Misal ke tor par, kisi variable ko create karte waqt aur usko aik khaas value se assign karte waqt, TypeScript us value ko uska type bana dega.
+
+let helloWorld = "Hello World";
+        
+let helloWorld: string
+Try
+JavaScript ka kaam kaise karta hai ko samajh kar, TypeScript aik type-system build kar sakta hai jo JavaScript code ko qubool karta hai magar uske sath types rakhta hai. Yeh aapke code mein types ko explicit banane ke liye extra characters ki zarurat nahi padti. Isi tarah TypeScript ko pata chal jata hai ke helloWorld upar di gayi misaal mein aik string hai.
+
+Aapne shayad Visual Studio Code mein JavaScript likha hai, aur editor auto-completion ka faida uthaya hai. Visual Studio Code JavaScript ke sath asani se kaam karne ke liye TypeScript ka istemal karta hai.
+
+Types ki Definition
+Aap JavaScript mein wide variety ke design patterns istemal kar sakte hain. Lekin, kuch design patterns aise hote hain jo types ko automatically infer karna mushkil bana dete hain (masalan, dynamic programming ka istemal karne wale patterns). In cases ko cover karne ke liye, TypeScript JavaScript zaban ka aik extension support karta hai, jo aapko batata hai ke types ko kya hona chahiye.
+
+Misal ke tor par, ek object create karne ke liye jisme name: string aur id: number shamil hain, aap likh sakte h
+const user = {
+  name: "Hayes",
+  id: 0,
+};
+Try
+Aap is object ki shakal ko wazeh taur par interface declaration istemal karke bayan kar sakte hain:
+
+interface User {
+  name: string;
+  id: number;
+}
+Try
+Phir aap ye declare kar sakte hain ke aik JavaScript object aapke naye interface ke shakal ke mutabiq hai, : TypeName syntax ka istemal karke variable declaration ke baad:
+
+const user: User = {
+  name: "Hayes",
+  id: 0,
+};
+Try
+Agar aap aik aise object ko provide karte hain jo aapne di gayi interface ke mutabiq nahi hai, toh TypeScript aapko warn karega:
+
+interface User {
+  name: string;
+  id: number;
+}
+ 
+const user: User = {
+  username: "Hayes",
+Type '{ username: string; id: number; }' is not assignable to type 'User'.
+  Object literal may only specify known properties, and 'username' does not exist in type 'User'.
+  id: 0,
+};
+Try
+Kyunki JavaScript classes aur object-oriented programming ko support karta hai, is liye TypeScript bhi. Aap classes ke saath interface declaration ka istemal kar sakte hain:
+
+interface User {
+  name: string;
+  id: number;
+}
+ 
+class UserAccount {
+  name: string;
+  id: number;
+ 
+  constructor(name: string, id: number) {
+    this.name = name;
+    this.id = id;
+  }
+}
+ 
+const user: User = new UserAccount("Murphy", 1);
+Try
+Aap interfaces ka istemal karke functions ke parameters aur return values ko annotate kar sakte hain:
+
+function deleteUser(user: User) {
+  // ...
+}
+ 
+function getAdminUser(): User {
+  //...
+}
+Try
+JavaScript mein pehle se hi ek chhota sa set of primitive types maujood hai: boolean, bigint, null, number, string, symbol, aur undefined, jo aap aik interface mein istemal kar sakte hain. TypeScript is list ko kuch aur types ke saath extend karta hai, jaise ke any (kuch bhi allow karta hai), unknown (ensure karta hai ke jo bhi is type ka istemal kare, woh type declare kare), never (ye type ho nahi sakti), aur void (aik function jo undefined return karta hai ya koi return value nahi hai).
+
+Aap dekhenge ke types banane ke do syntax hain: Interfaces aur Types. Aapko interface ko prefer karna chahiye. Type ka istemal tab karen jab aap ko khas features ki zarurat ho.
+
+Types Ko Milakar Banana
+TypeScript ke saath, aap simple types ko milakar complex types bana sakte hain. Is ko karne ke do mashhoor tareeqe hain: unions ke saath, aur generics ke saath.
+Unions
+
+Union ke saath, aap declare kar sakte hain ke aik type kai mukhtalif types mein se ek ho sakti hai. Misal ke tor par, aap ek boolean type ko true ya false ke tor par describe kar sakte hain:
+
+type MeraBool = true | false;
+Try
+Note: Agar aap MyBool ke upar hover karte hain, toh aapko dekhne ko milega ke yeh boolean ke tor par classify kiya gaya hai. Ye Structural Type System ka ek sifa hai. Is par mazeed neeche zikar hai.
+
+Union types ke liye aik popular use-case ye hai ke aap describe kar sakte hain ke aik value kis set mein string ya number literals ke liye ijazat di gayi hai:
+
+type WindowStates = "open" | "closed" | "minimized";
+type LockStates = "locked" | "unlocked";
+type PositiveOddNumbersUnderTen = 1 | 3 | 5 | 7 | 9;
+Try
+Unions mukhtalif types ka samna karne ka bhi ek tareeqa faraham karte hain. Misal ke tor par, aap aisa function bana sakte hain jo aik array ya aik string leta hai:
+
+function getLength(obj: string | string[]) {
+  return obj.length;
+}
+Try
+Variable ka type seekhne ke liye, typeof ka istemal karen:
+
+Type	Predicate
+string	typeof s === "string"
+number	typeof n === "number"
+boolean	typeof b === "boolean"
+undefined	typeof undefined === "undefined"
+function	typeof f === "function"
+array	Array.isArray(a)
+Misal ke tor par, aap aik function ko mukhtalif values return karwana sikh sakte hain agar usay aik string ya array pass kiya jata hai:
+
+function wrapInArray(obj: string | string[]) {
+  if (typeof obj === "string") {
+    return [obj];
+            
+(parameter) obj: string
+  }
+  return obj;
+}
+Try
+Generics
+
+Generics types ko variables faraham karte hain. Aam misal ek array ki hoti hai. Ek array bina generics ke kuch bhi contain kar sakti hai. Ek array generics ke saath woh values describe kar sakti hai jo array mein shamil hain.
+
+type StringArray = Array<string>;
+type NumberArray = Array<number>;
+type ObjectWithNameArray = Array<{ name: string }>;
+Aap apne apne types declare kar sakte hain jo generics ka istemal karte hain:
+
+interface Backpack<Type> {
+  add: (obj: Type) => void;
+  get: () => Type;
+}
+ 
+// Ye line TypeScript ko batane ka aik shortcut hai ke
+// ek constant backpack hai, aur kis tarah se usay istemal kiya gaya hai
+// us par fikar na karen.
+declare const backpack: Backpack<string>;
+ 
+// object aik string hai, kyunki humne Backpack ke variable hisse ko upar declare kiya hai.
+const object = backpack.get();
+ 
+// Kyunki backpack variable aik string hai, toh aap add function ko aik number pass nahi kar sakte.
+backpack.add(23);
+Argument of type 'number' is not assignable to parameter of type 'string'.
+Try
+Structural Type System
+
+TypeScript ke aik bunyadi asool mein se ek ye hai ke type checking values ke shapes par tawajju deti hai. Kabhi kabhi isay "duck typing" ya "structural typing" kehte hain.
+
+Aik structural type system mein, agar do objects ka same shape hai, toh unhein wahi type consider kiya jata hai.
+
+interface Point {
+  x: number;
+  y: number;
+}
+ 
+function logPoint(p: Point) {
+  console.log(`${p.x}, ${p.y}`);
+}
+ 
+// logs "12, 26"
+const point = { x: 12, y: 26 };
+logPoint(point);
+Try
+point variable ko kabhi bhi Point type declare nahi kiya gaya hai. Magar TypeScript point ka shape Point ke shape ke sath compare karta hai type-check ke doran. Dono ka shape same hai, isliye code pass ho jata hai.
+
+Shape-matching sirf object ke fields ka subset match karne ke liye zaroorat hai.
+
+const point3 = { x: 12, y: 26, z: 89 };
+logPoint(point3); // logs "12, 26"
+ 
+const rect = { x: 33, y: 3, width: 30, height: 80 };
+logPoint(rect); // logs "33, 3"
+ 
+const color = { hex: "#187ABF" };
+logPoint(color);
+Argument of type '{ hex: string; }' is not assignable to parameter of type 'Point'.
+  Type '{ hex: string; }' is missing the following properties from type 'Point': x, y
+Try
+Classes aur objects ke conform hone ke darmiyan koi farq nahi hai:
+Klas VirtualPoint {
+  x: number;
+  y: number;
+ 
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+ 
+const nayaVPoint = new VirtualPoint(13, 56);
+logPoint(newVPoint); // logs "13, 56"
+Try
+Agar object ya class mein saare zaroori properties hain, to TypeScript kahega ke woh match karte hain, bina implementation details ke.
+
+
+
+Handbook TypeScript
+Is Handbook Ke Baare Mein
+Programming community ko introduce hone ke lagbhag 20 saal baad, JavaScript ab tak ke sab se zyada widespread cross-platform languages mein se ek hai. Ek chhote se scripting language ke roop mein shuru hone par jo trivial interactivity ko webpages mein shamil karne ke liye tha, JavaScript ab har size ke frontend aur backend applications ke liye ek pasandida language ban gaya hai. Jab ke JavaScript mein likhe gaye programs ki size, scope, aur complexity ne bahut zyada badh gayi hai, lekin JavaScript language ke code ke alag alag units ke darmiyan rishte ko vyakt karne ki kshamata nahi badhi. JavaScript ki khaas runtime semantics ke saath mil kar, language aur program complexity ke darmiyan yeh mismatch JavaScript development ko scale par manage karna mushkil kaam banata hai.
+
+Sab se aam tarah ke errors jo programmers likhte hain, unhein type errors ke roop mein describe kiya ja sakta hai: kisi khaas tarah ke value ka istemal kiya gaya jahan ek mukhtalif tarah ka value tha jo expected tha. Ye sadharan galtiyan ho sakti hain, jaise ke simple typos, kisi library ke API surface ko samajhne mein kami, runtime behavior ke baare mein galat assumption, ya phir doosri galtiyan. TypeScript ka maqsad JavaScript programs ke liye aik static typechecker hona hai - doosre alfaaz mein, ek aisa tool jo aapke code ke chalne se pehle (static) chalta hai aur yeh ensure karta hai ke program ke types sahi hain (typechecked).
+
+Agar aap TypeScript ke saath JavaScript background ke bina aa rahe hain, aur ummeed hai ke TypeScript aapki pehli language hogi, toh hum aapko pehle Microsoft Learn JavaScript tutorial ya Mozilla Web Docs par JavaScript ki documentation parhne ki salah dete hain. Agar aapke paas doosri languages mein experience hai, toh aap handbook ko padh kar JavaScript syntax ko kaafi jaldi samajh sakte hain.
+
+Is Handbook Ka Structure Kaisa Hai
+Handbook do hisson mein tukde kiya gaya hai:
+
+The Handbook
+
+The TypeScript Handbook ek comprehensive document hai jo TypeScript ko rojmarra ke programmers ko samjhata hai. Aap left-hand navigation mein se top se bottom tak handbook ko padh kar isey parh sakte hain.
+
+Aapko har chapter ya page se diye gaye concepts ka mazboot understanding expect karni chahiye. The TypeScript Handbook ek complete language specification nahi hai, lekin iska maqsad language ke saare features aur behaviors ko cover karne ki ek comprehensive guide ban na hai.
+
+Ek reader jo walkthrough ko mukammal karta hai, woh yeh karne ke qabil hona chahiye:
+
+Aam tor par istemal hone wale TypeScript syntax aur patterns ko padhna aur samajhna
+Ahem compiler options ke asrat ka bayan karna
+Type system ka behavior zyadatar cases mein sahi taur par predict karna
+Saaf aur muqtasar hone ki muddat mein, Handbook ka main content har edge case ya features ke chhoti chhoti baaton ko explore nahi karega. Aap particular concepts ke zyada tafseelat ko reference articles mein dekh sakte hain.
+
+Reference Files
+
+Handbook ke niche wale reference section ka maqsad hai kisi khaas hisse ke kaam karne ka ek gehra understanding faraham karna. Aap ise top-to-bottom padh sakte hain, lekin har section ka ek single concept ko gehri samjhane ka maqsad hai - matlab continuity ka koi iraada nahi hai.
+
+Ghair-Maqasid
+Dastoor nama bhi ek mukhtasir dastavaiz hai jo kuch ghanton mein aaram se parha ja sakta hai. Kuch mawad chhote rakhne ke liye kuch mawad par zor nahi dala jayega.
+
+Khaaskar, Dastoor nama mukammal taur par bunyadi JavaScript bunyadiyat jaise functions, classes, aur closures ka parda nahi utarta. Zaroori hote hue, ham un mawad par links shamil karenge jo aapko in tasavurat ke baare mein parhne ke liye istemal kar sakte hain.
+
+Dastoor nama ka maqsad bhi kisi zuban ki tafseel se taweel nahi hai. Kuch mamlaat mein, nakaara mamlaat ya rawiya ke foarmal wazahat ko bulawa diya jayega aur buland star par, asaan samajhne waale wazahat ko pasand kiya jayega. Is ke bajaay, mukhtalif hawale saazi ke alag reference pages hain jo TypeScript ke rawaiyye ke bohot se pehluo ko zyada darust aur foarmal taur par wazahat karte hain. Reference pages TypeScript se ghair-waqif parhne walon ke liye nahi hain, is liye woh tajribat shudah istilahat ya un mawad par hawale deti hain jin par aap ne abhi tak parha nahi hai.
+
+Aakhir mein, Dastoor nama TypeScript ko doosre aalaat ke saath kaise interact karta hai, us par tawajju dene ka maqsad nahi hai. Jahan zaroori ho, TypeScript ko webpack, rollup, parcel, react, babel, closure, lerna, rush, bazel, preact, vue, angular, svelte, jquery, yarn, ya npm ke saath kaise configure karna hai, jaise mawad is scope se bahar hain - aap ye resources web par kahin aur dhoondh sakte hain.
+
+Shuru Karo
+Naye Programmers ke liye TS
+JS Programmers ke liye TypeScript
+Java/C# Programmers ke liye TS
+Functional Programmers ke liye TS
+5 Minute Mein TypeScript Tooling
+Dastoor nama
+Hawale
+Modules Hawale
+Tutorials
+Naya Kya Hai
+Declaration Files
+JavaScript
+Project Configuration
+JavaScript Programmers ke liye TypeScript
+TypeScript JavaScript ke saath ek anokha talluq rakhta hai. TypeScript JavaScript ke tamam khawas ko pesh karta hai, aur inke oopar ek mazeed tabqa bhi: TypeScript ka type system.
+
+Maslan, JavaScript string aur number jaise language primitives faraham karta hai, lekin ye check nahi karta ke aap ne inhe mukhtalif taur par assign kiya hai ke nahi. TypeScript ye karta hai.
+
+Iska matlab hai ke aapka mojudah kaam karne wala JavaScript code bhi TypeScript code hai. TypeScript ka bada faida ye hai ke ye aapke code mein anjaan rawai ke nuqsanat ko highlight kar sakta hai, bugs ke imkaanat ko kam kar deta hai.
+
+Ye tutorial TypeScript ka ek mukhtasir jayeza faraham karta hai, jisme iska type system par tawajju di gayi hai.
+
+Inference ke Zariye Types
+TypeScript JavaScript language ko jaanta hai aur bohot se mamlaat mein types aapke liye generate kar dega. Maslan, ek variable banane aur usay kisi khaas qeemat mein assign karne mein, TypeScript qeemat ko apna type bana lega.
+
+let helloWorld = "Hello World";
+
+let helloWorld: string
+Aazmao
+JavaScript ka kaam kaise karta hai ko samajh kar, TypeScript JavaScript code ko qabool karne wala type system bana sakta hai lekin types ke liye extra characters add karne ki zarurat nahi hoti. Ye wahi tareeqa hai jisse TypeScript ko pata chalta hai ke upar diye gaye misaal mein helloWorld ek string hai.
+
+Aapne shayad Visual Studio Code mein JavaScript likha hai aur editor auto-completion ka faida uthaya hai. Visual Studio Code JavaScript ke saath kaam karne ko aasan banane ke liye TypeScript ka istemal karta hai.
+
+Types ki Taareef
+Aap JavaScript mein ek wide variety of design patterns istemal kar sakte hain. Lekin, kuch design patterns types ko automatically samjhaane mein mushkil bana dete hain (maslan, dynamic programming istemal karne wale patterns). In cases ko cover karne ke liye, TypeScript JavaScript language ka ek extension ko support karta hai, jo aapko bataane ke liye jagah deta hai ke types kya hone chahiye.
+
+Maslan, ek object create karne ke liye jiska type inference hoga jo name: string aur id: number ko shamil karta hai, aap likh sakte hain:
+
+const user = {
+  name: "Hayes",
+  id: 0,
+};
+Aazmao
+Aap is object ki shape ko zahiran bata sakte hain ek interface declaration istemal karke:
+
+interface User {
+  name: string;
+  id: number;
+}
+Aazmao
+Aap phir declare kar sakte hain ke ek JavaScript object aapke naye interface ki shape ko follow karta hai syntax ka istemal karke jaise ke: TypeName ek variable declaration ke baad.
+constituo user: User = {
+  name: "Hayes",
+  id: 0,
+};
+Conatus
+Si praebes obiectum quod non congruit interfacie quam praebuisti, TypeScript te monere faciet:
+
+interfacies User {
+  nomen: string;
+  id: numerus;
+}
+ 
+const user: User = {
+  nomen: "Hayes",
+TypeError: 'username: string; id: numerus;' non est assignabilis ad 'User' generis.
+  Litera obiecti potest indicare tantum proprietates notae, et 'username' non est in genere 'User'.
+  id: 0,
+};
+Conatus
+Quoniam JavaScript classes et programmationem object-oriented sustinet, ita facit etiam TypeScript. Potes interface declarationem cum classes uti:
+
+interfacies User {
+  nomen: string;
+  id: numerus;
+}
+ 
+class UserAccount {
+  nomen: string;
+  id: numerus;
+ 
+  constructor(nomen: string, id: numerus) {
+    this.nomen = nomen;
+    this.id = id;
+  }
+}
+ 
+const user: User = new UserAccount("Murphy", 1);
+Conatus
+Potes interfaces adnotare parametris et reditus valoribus ad functiones:
+
+function deleteUser(user: User) {
+  // ...
+}
+ 
+function getAdminUser(): User {
+  //...
+}
+Conatus
+Iam est parva set of primitive types in JavaScript: boolean, bigint, null, number, string, symbol, et undefined, quos potes in interfacie uti. TypeScript hunc ordinem cum paucis plus extendit, ut any (omne permittere), unknown (certificare uti hunc typum declarans quid typus sit), never (non fieri potest hunc typum), et void (functio quae reditum undefined habet aut nullum reditum habet).
+
+Vides duos syntaxes ad construendas typis: Interfaces et Types. Interface praeferre debes. Type utere cum necessitate specifica.
+
+Compositio Typorum
+Cum TypeScript, potes creare typis complexis combinate ex simplicibus. Duas vias populares sunt ad hoc faciendum: cum unionibus, et cum genericis.
+
+Uniones
+Cum unione, potes declarare hunc typum esse unum ex multis typis. Exempli gratia, potes describere typum booleanum aut verum aut falsum esse:
+
+type MyBool = verum | falsum;
+Conatus
+Nota: Si sustuleris cursorum super MyBool supra, videbis eum classificatum esse ut booleanum. Id est proprietatem de Systemate Typorum Structurali. Plus infra de hoc.
+
+Casus usitatus pro unionibus est describere set stringarum aut numerorum literarum quas valor permittitur:
+
+type WindowStates = "apertus" | "clausus" | "minimatus";
+type LockStates = "clausus" | "aperitus";
+type PositiveOddNumbersUnderTen = 1 | 3 | 5 | 7 | 9;
+Conatus
+Uniones modum praebent ad tractandum differentes typis etiam. Exempli gratia, habere potes functionem quae accipit array aut string:
+
+function getLength(obj: string | string[]) {
+  return obj.length;
+}
+Conatus
+Ut discas typum variabilis, utere typeof:
+
+Typus	Praedicatum
+string	typeof s === "string"
+number	typeof n === "number"
+boolean	typeof b === "boolean"
+undefined	typeof undefined === "undefined"
+function	typeof f === "function"
+array	Array.isArray(a)
+Exempli gratia, facere potes functionem alios valores reddere dependens utrum string aut array transmittatur:
+
+function wrapInArray(obj: string | string[]) {
+  if (typeof obj === "string") {
+    return [obj];
